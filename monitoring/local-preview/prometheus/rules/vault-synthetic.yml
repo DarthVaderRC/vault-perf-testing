@@ -1,0 +1,161 @@
+groups:
+  - name: vault_performance_preview
+    rules:
+      - record: vault_request_total
+        expr: time() * 1.7
+        labels:
+          env: lab
+          cluster: vault-5n
+          namespace: root
+          operation: kv_read
+      - record: vault_request_total
+        expr: time() * 0.6
+        labels:
+          env: lab
+          cluster: vault-5n
+          namespace: root
+          operation: kv_write
+      - record: vault_request_total
+        expr: time() * 0.4
+        labels:
+          env: lab
+          cluster: vault-5n
+          namespace: root
+          operation: approle_login
+
+      - record: vault_request_errors_total
+        expr: time() * 0.002
+        labels:
+          env: lab
+          cluster: vault-5n
+          namespace: root
+
+      - record: vault_request_duration_seconds_bucket
+        expr: time() * 0.2
+        labels:
+          env: lab
+          cluster: vault-5n
+          namespace: root
+          le: "0.05"
+      - record: vault_request_duration_seconds_bucket
+        expr: time() * 0.4
+        labels:
+          env: lab
+          cluster: vault-5n
+          namespace: root
+          le: "0.10"
+      - record: vault_request_duration_seconds_bucket
+        expr: time() * 0.8
+        labels:
+          env: lab
+          cluster: vault-5n
+          namespace: root
+          le: "0.25"
+      - record: vault_request_duration_seconds_bucket
+        expr: time() * 1.2
+        labels:
+          env: lab
+          cluster: vault-5n
+          namespace: root
+          le: "0.50"
+      - record: vault_request_duration_seconds_bucket
+        expr: time() * 1.6
+        labels:
+          env: lab
+          cluster: vault-5n
+          namespace: root
+          le: "1.00"
+      - record: vault_request_duration_seconds_bucket
+        expr: time() * 2.0
+        labels:
+          env: lab
+          cluster: vault-5n
+          namespace: root
+          le: "+Inf"
+
+      - record: vault_inflight_requests
+        expr: 120 + (time() / 100)
+        labels:
+          env: lab
+          cluster: vault-5n
+          namespace: root
+
+      - record: process_cpu_seconds_total
+        expr: time() * 0.15
+        labels:
+          env: lab
+          cluster: vault-5n
+          job: vault
+      - record: process_resident_memory_bytes
+        expr: 1.8e10 + (time() * 5000)
+        labels:
+          env: lab
+          cluster: vault-5n
+          job: vault
+
+      - record: node_network_receive_bytes_total
+        expr: time() * 2.0e6
+        labels:
+          env: lab
+          cluster: vault-5n
+          job: vault-node
+      - record: node_network_transmit_bytes_total
+        expr: time() * 1.7e6
+        labels:
+          env: lab
+          cluster: vault-5n
+          job: vault-node
+
+      - record: node_filesystem_size_bytes
+        expr: 1.2e12
+        labels:
+          env: lab
+          cluster: vault-5n
+          job: vault-node
+          fstype: ext4
+      - record: node_filesystem_avail_bytes
+        expr: 3.4e11 - (time() * 2000)
+        labels:
+          env: lab
+          cluster: vault-5n
+          job: vault-node
+          fstype: ext4
+
+      - record: process_cpu_seconds_total
+        expr: time() * 0.20
+        labels:
+          env: lab
+          cluster: injector
+          job: k6-injector
+      - record: process_resident_memory_bytes
+        expr: 8.0e9 + (time() * 2500)
+        labels:
+          env: lab
+          cluster: injector
+          job: k6-injector
+      - record: node_network_receive_bytes_total
+        expr: time() * 1.2e6
+        labels:
+          env: lab
+          cluster: injector
+          job: k6-agent
+      - record: node_network_transmit_bytes_total
+        expr: time() * 1.1e6
+        labels:
+          env: lab
+          cluster: injector
+          job: k6-agent
+      - record: node_filesystem_size_bytes
+        expr: 2.5e11
+        labels:
+          env: lab
+          cluster: injector
+          job: k6-agent
+          fstype: ext4
+      - record: node_filesystem_avail_bytes
+        expr: 1.6e11 - (time() * 1000)
+        labels:
+          env: lab
+          cluster: injector
+          job: k6-agent
+          fstype: ext4

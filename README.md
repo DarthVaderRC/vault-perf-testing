@@ -4,6 +4,32 @@ This document explains the enterprise (`ent*`) load scripts in:
 
 `pert-testing/scenarios/StressLoad/`
 
+## Starter pack artifacts
+
+Use these templates as a starting point for a full Vault Enterprise performance engagement:
+
+- Test plan template: `docs/vault-performance-test-plan-template.md`
+- Results report template: `docs/vault-performance-test-results-report-template.md`
+- Grafana dashboard JSON: `dashboards/grafana/vault-performance-observability-dashboard.json`
+- Grafana usage guide: `docs/vault-grafana-dashboard-guide.md`
+- Concrete 5-node on-prem example plan: `docs/vault-performance-test-plan-5node-onprem-example.md`
+- Local Grafana preview runbook: `docs/vault-grafana-local-preview-guide.md`
+
+## Monitoring updates (Grafana + Prometheus local preview)
+
+The monitoring starter pack now includes:
+
+- Dashboard sections split into:
+  - **Performance Metrics**
+  - **Capacity Metrics** (Vault CPU, memory, disk, network)
+  - **Injector Capacity Metrics** (injector CPU, memory, disk, network)
+- Local synthetic Prometheus rules to populate all dashboard sections with sample data in preview mode:
+  - `monitoring/local-preview/prometheus/rules/vault-synthetic.yml`
+- Local preview stack for quick visual validation:
+  - `monitoring/local-preview/docker-compose.yml`
+- Latest dashboard preview screenshot artifact:
+  - `docs/assets/grafana-dashboard-preview.png`
+
 ## Scripts covered
 
 - `ent.js`

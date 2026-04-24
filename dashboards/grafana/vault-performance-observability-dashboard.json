@@ -1,0 +1,538 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 100,
+      "panels": [],
+      "title": "Performance Metrics",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 1
+      },
+      "id": 1,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(vault_request_total{env=~\"$env\",cluster=~\"$cluster\",namespace=~\"$namespace\"}[1m]))",
+          "legendFormat": "total req/s",
+          "refId": "A"
+        }
+      ],
+      "title": "Vault Request Throughput",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 1
+      },
+      "id": 2,
+      "targets": [
+        {
+          "expr": "sum(rate(vault_request_total{env=~\"$env\",cluster=~\"$cluster\",namespace=~\"$namespace\"}[1m])) by (operation)",
+          "legendFormat": "{{operation}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Throughput by Operation",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 1
+      },
+      "id": 3,
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(vault_request_duration_seconds_bucket{env=~\"$env\",cluster=~\"$cluster\",namespace=~\"$namespace\"}[5m])) by (le)) * 1000",
+          "legendFormat": "p95 latency",
+          "refId": "A"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(vault_request_duration_seconds_bucket{env=~\"$env\",cluster=~\"$cluster\",namespace=~\"$namespace\"}[5m])) by (le)) * 1000",
+          "legendFormat": "p99 latency",
+          "refId": "B"
+        }
+      ],
+      "title": "Vault Latency (p95/p99)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 9
+      },
+      "id": 4,
+      "targets": [
+        {
+          "expr": "sum(rate(vault_request_errors_total{env=~\"$env\",cluster=~\"$cluster\",namespace=~\"$namespace\"}[5m])) / clamp_min(sum(rate(vault_request_total{env=~\"$env\",cluster=~\"$cluster\",namespace=~\"$namespace\"}[5m])), 1)",
+          "legendFormat": "error ratio",
+          "refId": "A"
+        }
+      ],
+      "title": "Error Ratio",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 9
+      },
+      "id": 5,
+      "targets": [
+        {
+          "expr": "sum(vault_inflight_requests{env=~\"$env\",cluster=~\"$cluster\",namespace=~\"$namespace\"})",
+          "legendFormat": "in-flight requests",
+          "refId": "A"
+        }
+      ],
+      "title": "Concurrency (In-Flight)",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 17
+      },
+      "id": 101,
+      "panels": [],
+      "title": "Capacity Metrics",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 18
+      },
+      "id": 6,
+      "targets": [
+        {
+          "expr": "100 * avg(rate(process_cpu_seconds_total{job=\"vault\",env=~\"$env\",cluster=~\"$cluster\"}[5m]))",
+          "legendFormat": "vault CPU",
+          "refId": "A"
+        }
+      ],
+      "title": "Vault CPU Utilization",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 18
+      },
+      "id": 7,
+      "targets": [
+        {
+          "expr": "sum(process_resident_memory_bytes{job=\"vault\",env=~\"$env\",cluster=~\"$cluster\"})",
+          "legendFormat": "vault RSS",
+          "refId": "A"
+        }
+      ],
+      "title": "Vault Memory (RSS)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "Bps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 26
+      },
+      "id": 8,
+      "targets": [
+        {
+          "expr": "sum(rate(node_network_receive_bytes_total{job=~\"vault.*\",env=~\"$env\",cluster=~\"$cluster\"}[5m]))",
+          "legendFormat": "rx",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(rate(node_network_transmit_bytes_total{job=~\"vault.*\",env=~\"$env\",cluster=~\"$cluster\"}[5m]))",
+          "legendFormat": "tx",
+          "refId": "B"
+        }
+      ],
+      "title": "Vault Network I/O",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 26
+      },
+      "id": 9,
+      "targets": [
+        {
+          "expr": "100 * (1 - avg(node_filesystem_avail_bytes{job=~\"vault.*\",env=~\"$env\",cluster=~\"$cluster\",fstype!~\"tmpfs|overlay\"} / node_filesystem_size_bytes{job=~\"vault.*\",env=~\"$env\",cluster=~\"$cluster\",fstype!~\"tmpfs|overlay\"}))",
+          "legendFormat": "disk used %",
+          "refId": "A"
+        }
+      ],
+      "title": "Vault Disk Utilization",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 34
+      },
+      "id": 102,
+      "panels": [],
+      "title": "Injector Capacity Metrics",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 0,
+        "y": 35
+      },
+      "id": 10,
+      "targets": [
+        {
+          "expr": "100 * avg(rate(process_cpu_seconds_total{job=\"k6-injector\",env=~\"$env\"}[5m]))",
+          "legendFormat": "injector CPU",
+          "refId": "A"
+        }
+      ],
+      "title": "Load Injector CPU",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 6,
+        "y": 35
+      },
+      "id": 11,
+      "targets": [
+        {
+          "expr": "sum(process_resident_memory_bytes{job=\"k6-injector\",env=~\"$env\"})",
+          "legendFormat": "injector RSS",
+          "refId": "A"
+        }
+      ],
+      "title": "Load Injector Memory",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 12,
+        "y": 35
+      },
+      "id": 13,
+      "targets": [
+        {
+          "expr": "100 * (1 - avg(node_filesystem_avail_bytes{job=~\"k6.*\",env=~\"$env\",fstype!~\"tmpfs|overlay\"} / node_filesystem_size_bytes{job=~\"k6.*\",env=~\"$env\",fstype!~\"tmpfs|overlay\"}))",
+          "legendFormat": "injector disk used %",
+          "refId": "A"
+        }
+      ],
+      "title": "Load Injector Disk Utilization",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "Bps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 18,
+        "y": 35
+      },
+      "id": 12,
+      "targets": [
+        {
+          "expr": "sum(rate(node_network_receive_bytes_total{job=~\"k6.*\",env=~\"$env\"}[5m]))",
+          "legendFormat": "injector rx",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(rate(node_network_transmit_bytes_total{job=~\"k6.*\",env=~\"$env\"}[5m]))",
+          "legendFormat": "injector tx",
+          "refId": "B"
+        }
+      ],
+      "title": "Load Injector Network I/O",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "style": "dark",
+  "tags": [
+    "vault",
+    "performance",
+    "capacity",
+    "troubleshooting"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": "Prometheus",
+          "value": "Prometheus"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "Datasource",
+        "name": "DS_PROMETHEUS",
+        "options": [],
+        "query": "prometheus",
+        "refresh": 1,
+        "type": "datasource"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": "lab",
+          "value": "lab"
+        },
+        "label": "Environment",
+        "name": "env",
+        "query": "label_values(vault_request_total, env)",
+        "refresh": 1,
+        "regex": "",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        }
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": "vault-5n",
+          "value": "vault-5n"
+        },
+        "label": "Cluster",
+        "name": "cluster",
+        "query": "label_values(vault_request_total{env=~\"$env\"}, cluster)",
+        "refresh": 1,
+        "regex": "",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        }
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": "root",
+          "value": "root"
+        },
+        "label": "Namespace",
+        "name": "namespace",
+        "query": "label_values(vault_request_total{env=~\"$env\",cluster=~\"$cluster\"}, namespace)",
+        "refresh": 1,
+        "regex": "",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        }
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Vault Enterprise Performance & Capacity Observability",
+  "uid": "vault-perf-capacity",
+  "version": 3,
+  "weekStart": ""
+}
